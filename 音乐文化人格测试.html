@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music &amp; Cultural Identity Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .option-btn { transition: all 0.2s ease; }
+        .option-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+        .result-card { animation: fadeInUp 0.6s ease forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Start Page -->
+    <div id="start-page" class="min-h-screen flex items-center justify-center p-6">
+        <div class="max-w-md w-full text-center">
+            <div class="mx-auto w-28 h-28 mb-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-xl">
+                <i class="fas fa-music text-white text-6xl"></i>
+            </div>
+
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Music &amp; Cultural Identity Test</h1>
+            <p class="text-xl text-gray-600 mb-10">Discover your music personality through 25 questions</p>
+
+            <div class="bg-white rounded-3xl p-8 shadow-xl mb-8">
+                <div class="flex items-center justify-center gap-4 mb-6">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-question-circle mr-2"></i>
+                        <span>25 Questions</span>
+                    </div>
+                    <div class="w-1 h-1 bg-gray-300 rounded-full"></div>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-clock mr-2"></i>
+                        <span>~5 minutes</span>
+                    </div>
+                </div>
+
+                <button onclick="startQuiz()"
+                        class="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3">
+                    <span>Start Test</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <p class="text-sm text-gray-400">Get your personalized music personality result</p>
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quiz-page" class="hidden min-h-screen bg-gray-50 p-4">
+        <div class="max-w-2xl mx-auto">
+            <div class="flex items-center justify-between mb-6 px-2">
+                <div class="flex items-center gap-3">
+                    <div class="text-sm font-medium text-gray-500">Progress</div>
+                    <div class="text-lg font-bold text-indigo-600" id="progress-text">1 / 25</div>
+                </div>
+                <button onclick="restartQuiz()" class="text-sm text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-redo mr-1"></i> Restart
+                </button>
+            </div>
+
+            <div class="h-2 bg-gray-200 rounded-full mb-8 overflow-hidden">
+                <div id="progress-bar" class="h-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full transition-all" style="width: 4%"></div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-xl p-8 mb-6">
+                <div class="mb-8">
+                    <div class="text-sm text-indigo-600 font-medium mb-3">Question <span id="question-number">1</span>/25</div>
+                    <h2 id="question-text" class="text-2xl font-bold text-gray-900 leading-tight"></h2>
+                </div>
+
+                <div id="options-container" class="space-y-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Page -->
+    <div id="result-page" class="hidden min-h-screen bg-gray-50 py-8 px-4">
+        <div class="max-w-2xl mx-auto">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                    <i class="fas fa-check-circle text-green-600 text-4xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Test Complete!</h2>
+                <p class="text-gray-600">Your music personality type is</p>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden mb-8 result-card">
+                <div id="result-header" class="px-8 py-10 text-white text-center">
+                    <div id="result-icon" class="text-6xl mb-4"></div>
+                    <h3 id="result-type" class="text-4xl font-bold mb-2"></h3>
+                    <p id="result-subtitle" class="text-xl opacity-90"></p>
+                </div>
+
+                <div class="px-8 py-8">
+                    <div class="mb-8">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <i class="fas fa-user text-indigo-600"></i>
+                            <span>Your Personality</span>
+                        </h4>
+                        <p id="result-description" class="text-gray-600 leading-relaxed"></p>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <i class="fas fa-music text-purple-600"></i>
+                            <span>Your Perfect Soundtrack</span>
+                        </h4>
+                        <div id="result-recommend" class="bg-gray-50 rounded-2xl p-5 text-gray-600 leading-relaxed"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button onclick="restartQuiz()"
+                        class="flex-1 py-3.5 border border-gray-300 text-gray-700 font-medium rounded-2xl hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-redo mr-2"></i> Take Test Again
+                </button>
+
+                <button onclick="shareResult()"
+                        class="flex-1 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-2xl shadow-lg hover:shadow-xl transition-all">
+                    <i class="fas fa-share-alt mr-2"></i> Share Result
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 25 Questions from latest document (English)
+        const questions = [
+            { q: "Which kind of music source do you prefer the most?", a: ["Local / traditional music from my culture", "Exotic music from around the world", "International mainstream pop music"] },
+            { q: "Do you pay attention to the cultural stories behind a song?", a: ["Yes, I care a lot about culture and meaning", "Sometimes I notice it", "No, I only care about the melody"] },
+            { q: "Do you like music with strong traditional cultural instruments?", a: ["Yes, I love traditional instrumental sounds", "It's okay", "Not really interested"] },
+            { q: "When listening to foreign music, you prefer…", a: ["Keep its original cultural style", "Mix it with modern international style", "Only listen to catchy trending melodies"] },
+            { q: "Are you willing to explore music from unfamiliar cultures?", a: ["Yes, I actively explore global music", "Maybe sometimes", "I prefer music from my own culture"] },
+            { q: "How do you feel about traditional music mixed with modern pop?", a: ["I love this cultural fusion style", "It is acceptable", "I prefer pure traditional or pure modern music"] },
+            { q: "Which cultural atmosphere do you enjoy more?", a: ["Gentle, traditional Eastern cultural vibe", "Free, energetic Western cultural vibe", "Mixed global styles, no preference"] },
+            { q: "How do you feel about songs in local dialects or ethnic languages?", a: ["They carry unique cultural beauty", "Acceptable but not my first choice", "I prefer standard language songs only"] },
+            { q: "When traveling or learning about new cultures, do you collect local music?", a: ["Yes, I always collect local music", "Sometimes I do", "Never"] },
+            { q: "For good music, what matters most to you?", a: ["Cultural value and national emotion", "Popular melody and international style", "Personal emotional feeling only"] },
+            { q: "Do you prefer folk traditional music or modern international pop?", a: ["Folk music with local cultural feelings", "Modern international city pop music", "I like both equally"] },
+            { q: "Would you like to listen to ancient traditional ceremonial music from other countries?", a: ["Yes, I want to feel deep culture", "I can listen for a short time", "Not interested at all"] },
+            { q: "Which music development do you support more?", a: ["Keep and protect traditional local culture", "Mix cultures freely across the world", "Balance both sides equally"] },
+            { q: "How much global world music is in your playlist?", a: ["A large part of my playlist", "A small part", "Almost none"] },
+            { q: "Do you prefer natural original folk music or polished international commercial music?", a: ["Natural, original cultural sound", "High-quality modern commercial music", "Both are fine"] },
+            { q: "How do you feel when foreign music mixes your local cultural elements?", a: ["It's beautiful cultural integration", "No special feeling", "It feels strange and unnatural"] },
+            { q: "Why do you usually listen to music?", a: ["To understand different cultures around the world", "Just to relax and enjoy myself", "To follow popular trends"] },
+            { q: "Do you prefer cultural vocal songs or global atmosphere instrumental music?", a: ["Songs with cultural stories and vocals", "Global cultural background instrumental music", "Either is fine"] },
+            { q: "How do you feel about rare tribal or indigenous music?", a: ["Curious and willing to explore", "I know it but won't listen actively", "Not interested"] },
+            { q: "What is your music cultural attitude?", a: ["Strongly love my own local cultural music", "Love global multicultural music openly", "No cultural preference — only good sound matters"] },
+            { q: "Which global cultural music genre attracts you the most?", a: ["Traditional folk ethnic music with cultural heritage", "World exotic rhythm music from different regions", "Modern cultural crossover pop style"] },
+            { q: "How do you feel about ancient ethnic instrumental ensemble music?", a: ["Fascinated by its cultural historical texture", "Enjoy it as a special artistic experience", "Prefer modern vocal music instead"] },
+            { q: "Do you favor regional characteristic folk tunes or global cultural electronic fusion music?", a: ["Pure regional original folk characteristic tunes", "Cultural elements mixed with electronic rhythm", "Both are equally pleasant to listen to"] },
+            { q: "Would you take the initiative to collect cultural-themed ethnic minority music or ancient ceremonial music?", a: ["Definitely, willing to deeply understand cultural connotations", "Occasionally listen to enrich music experience", "Not interested in such niche cultural styles"] },
+            { q: "When choosing cultural music, your core priority is?", a: ["Authentic original cultural style and inheritance sense", "Fashionable mixed cultural rhythm and sense of atmosphere", "Simple and pleasant melody without focusing on cultural attributes"] }
+        ];
+
+        // Scoring rules from latest document
+        const scoreRules = [
+            {0: {"Local Culture Guardian": 2}, 1: {"Global Culture Explorer": 2}, 2: {"Trendy International Follower": 2}},
+            {0: {"Traditional Literary Thinker": 2}, 1: {"Fusion Aesthetic Innovator": 1}, 2: {"Carefree Eclectic Listener": 2}},
+            {0: {"Local Culture Guardian": 2}, 1: {"Fusion Aesthetic Innovator": 1}, 2: {"Trendy International Follower": 2}},
+            {0: {"Global Culture Explorer": 2}, 1: {"Fusion Aesthetic Innovator": 2}, 2: {"Carefree Eclectic Listener": 2}},
+            {0: {"Global Culture Explorer": 2}, 1: {"Carefree Eclectic Listener": 1}, 2: {"Local Culture Guardian": 2}},
+            {0: {"Fusion Aesthetic Innovator": 2}, 1: {"Carefree Eclectic Listener": 1}, 2: {"Traditional Literary Thinker": 2}},
+            {0: {"Local Culture Guardian": 2}, 1: {"Global Culture Explorer": 2}, 2: {"Carefree Eclectic Listener": 2}},
+            {0: {"Traditional Literary Thinker": 2}, 1: {"Fusion Aesthetic Innovator": 1}, 2: {"Trendy International Follower": 2}},
+            {0: {"Global Culture Explorer": 2}, 1: {"Carefree Eclectic Listener": 1}, 2: {"Trendy International Follower": 2}},
+            {0: {"Local Culture Guardian": 2}, 1: {"Trendy International Follower": 2}, 2: {"Carefree Eclectic Listener": 2}},
+            {0: {"Traditional Literary Thinker": 2}, 1: {"Trendy International Follower": 2}, 2: {"Fusion Aesthetic Innovator": 2}},
+            {0: {"Global Culture Explorer": 2}, 1: {"Carefree Eclectic Listener": 1}, 2: {"Local Culture Guardian": 1}},
+            {0: {"Local Culture Guardian": 2}, 1: {"Global Culture Explorer": 2}, 2: {"Fusion Aesthetic Innovator": 2}},
+            {0: {"Global Culture Explorer": 2}, 1: {"Fusion Aesthetic Innovator": 1}, 2: {"Traditional Literary Thinker": 2}},
+            {0: {"Local Culture Guardian": 2}, 1: {"Trendy International Follower": 2}, 2: {"Carefree Eclectic Listener": 2}},
+            {0: {"Fusion Aesthetic Innovator": 2}, 1: {"Carefree Eclectic Listener": 1}, 2: {"Traditional Literary Thinker": 2}},
+            {0: {"Global Culture Explorer": 2}, 1: {"Carefree Eclectic Listener": 2}, 2: {"Trendy International Follower": 2}},
+            {0: {"Traditional Literary Thinker": 2}, 1: {"Global Culture Explorer": 2}, 2: {"Carefree Eclectic Listener": 2}},
+            {0: {"Global Culture Explorer": 2}, 1: {"Fusion Aesthetic Innovator": 1}, 2: {"Trendy International Follower": 2}},
+            {0: {"Local Culture Guardian": 2}, 1: {"Global Culture Explorer": 2}, 2: {"Carefree Eclectic Listener": 2}},
+            {0: {"Local Culture Guardian": 2}, 1: {"Global Culture Explorer": 2}, 2: {"Trendy International Follower": 2}},
+            {0: {"Traditional Literary Thinker": 2}, 1: {"Fusion Aesthetic Innovator": 1}, 2: {"Carefree Eclectic Listener": 2}},
+            {0: {"Local Culture Guardian": 2}, 1: {"Fusion Aesthetic Innovator": 2}, 2: {"Carefree Eclectic Listener": 1}},
+            {0: {"Traditional Literary Thinker": 2}, 1: {"Global Culture Explorer": 1}, 2: {"Trendy International Follower": 2}},
+            {0: {"Local Culture Guardian": 2}, 1: {"Fusion Aesthetic Innovator": 2}, 2: {"Carefree Eclectic Listener": 2}}
+        ];
+
+        const personalityData = {
+            "Local Culture Guardian": {
+                icon: "fa-globe-asia-australia",
+                color: "from-amber-500 to-orange-600",
+                subtitle: "Cultural Root Protector",
+                description: "You have a deep, almost instinctive love for your own culture. Traditional folk music, national melodies, and local folk tunes feel like home to you. Music isn't just sound — it's your roots, your identity, and your emotional anchor.",
+                recommend: "《高山流水》 (ancient guqin), 《二泉映月》 (erhu), 《春江花月夜》, classic folk songs like 《茉莉花》, and any traditional Chinese instrumental playlists."
+            },
+            "Global Culture Explorer": {
+                icon: "fa-globe",
+                color: "from-blue-500 to-cyan-600",
+                subtitle: "World Music Adventurer",
+                description: "You're genuinely curious about the whole world. Different languages, strange instruments, unfamiliar rhythms — they all excite you. Music is your passport. You love discovering how other cultures express joy, sadness, and celebration through sound.",
+                recommend: "Ravi Shankar, Miriam Makeba, Buena Vista Social Club, Japanese shakuhachi pieces, and any 'World Music' or 'Putumayo' playlists."
+            },
+            "Fusion Aesthetic Innovator": {
+                icon: "fa-magic",
+                color: "from-purple-500 to-pink-600",
+                subtitle: "Cross-Cultural Creator",
+                description: "You don't choose between old and new — you love when they dance together. Traditional Chinese elements mixed with modern beats, Eastern melodies blended with Western production… you find that mix incredibly beautiful and creative.",
+                recommend: "《牵丝戏》, 《赤伶》, The Hu's 'Wolf Totem', Jay Chou's 《青花瓷》, and any '国潮' or 'Crossover Fusion' playlists."
+            },
+            "Traditional Literary Thinker": {
+                icon: "fa-book",
+                color: "from-emerald-500 to-teal-600",
+                subtitle: "Reflective Music Lover",
+                description: "You prefer music with depth and stories. You're not into quick, disposable hits. You love the quiet beauty of ancient sounds, the feeling of time and emotion layered in every note. Listening is like reading a good book — you want to sit with it and feel it.",
+                recommend: "《渔舟唱晚》 (guzheng), 《阳关三叠》, the Liang Zhu violin concerto, 《梅花三弄》, and calm traditional instrumental collections."
+            },
+            "Trendy International Follower": {
+                icon: "fa-headphones",
+                color: "from-rose-500 to-red-600",
+                subtitle: "Global Trend Listener",
+                description: "You follow global music trends closely. You enjoy international, youthful, and popular styles. You listen casually and care more about whether it sounds good and feels fashionable rather than cultural background.",
+                recommend: "Global pop charts, international hit singles, light cross-border pop, and urban trendy BGM."
+            },
+            "Carefree Eclectic Listener": {
+                icon: "fa-cloud",
+                color: "from-slate-500 to-gray-600",
+                subtitle: "Easygoing Music Lover",
+                description: "You don't picky about music styles or cultural labels. Local, global, traditional, trendy — as long as it sounds good, you accept it. You listen to relax and enjoy, without overthinking culture or taking sides.",
+                recommend: "All-style universal playlists, stress-free relaxing pure music, and versatile global pop mixes."
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = [];
+
+        function startQuiz() {
+            document.getElementById('start-page').classList.add('hidden');
+            document.getElementById('quiz-page').classList.remove('hidden');
+            currentQuestion = 0;
+            answers = [];
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('question-number').innerText = currentQuestion + 1;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-text').innerText = `${currentQuestion + 1} / 25`;
+
+            const progressPercent = Math.round(((currentQuestion + 1) / 25) * 100);
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            q.a.forEach((optionText, index) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left px-6 py-4 bg-white border border-gray-200 rounded-2xl hover:border-indigo-300 flex items-center gap-4 group`;
+                btn.innerHTML = `
+                    <div class="w-8 h-8 rounded-full border-2 border-gray-300 group-hover:border-indigo-500 flex items-center justify-center flex-shrink-0">
+                        <span class="text-sm font-medium text-gray-500 group-hover:text-indigo-600">${String.fromCharCode(65 + index)}</span>
+                    </div>
+                    <span class="text-lg text-gray-700">${optionText}</span>
+                `;
+                btn.onclick = () => selectAnswer(index);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(choiceIndex) {
+            answers.push(choiceIndex);
+
+            if (currentQuestion < 24) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                calculateResult();
+            }
+        }
+
+        function calculateResult() {
+            let scores = {
+                "Local Culture Guardian": 0,
+                "Global Culture Explorer": 0,
+                "Fusion Aesthetic Innovator": 0,
+                "Traditional Literary Thinker": 0,
+                "Trendy International Follower": 0,
+                "Carefree Eclectic Listener": 0
+            };
+
+            answers.forEach((choice, i) => {
+                const rule = scoreRules[i];
+                if (rule[choice]) {
+                    for (let type in rule[choice]) {
+                        scores[type] += rule[choice][type];
+                    }
+                }
+            });
+
+            let maxScore = 0;
+            let resultType = "";
+            for (let type in scores) {
+                if (scores[type] > maxScore) {
+                    maxScore = scores[type];
+                    resultType = type;
+                }
+            }
+
+            showResult(resultType);
+        }
+
+        function showResult(type) {
+            document.getElementById('quiz-page').classList.add('hidden');
+            document.getElementById('result-page').classList.remove('hidden');
+
+            const data = personalityData[type];
+
+            document.getElementById('result-type').innerText = type;
+            document.getElementById('result-subtitle').innerText = data.subtitle;
+            document.getElementById('result-description').innerText = data.description;
+            document.getElementById('result-recommend').innerText = data.recommend;
+
+            const header = document.getElementById('result-header');
+            header.className = `px-8 py-10 bg-gradient-to-br ${data.color} text-white text-center`;
+
+            document.getElementById('result-icon').innerHTML = `<i class="fas ${data.icon}"></i>`;
+        }
+
+        function restartQuiz() {
+            document.getElementById('result-page').classList.add('hidden');
+            document.getElementById('start-page').classList.remove('hidden');
+        }
+
+        function shareResult() {
+            const type = document.getElementById('result-type').innerText;
+            const text = `My Music & Cultural Identity Test result is: ${type}! Try it yourself ~`;
+
+            if (navigator.share) {
+                navigator.share({ title: 'Music Personality Test Result', text: text });
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Result copied to clipboard!');
+                });
+            }
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('quiz-page').classList.contains('hidden')) return;
+            const options = document.querySelectorAll('#options-container button');
+            if (e.key === '1' || e.key === 'a' || e.key === 'A') options[0]?.click();
+            if (e.key === '2' || e.key === 'b' || e.key === 'B') options[1]?.click();
+            if (e.key === '3' || e.key === 'c' || e.key === 'C') options[2]?.click();
+        });
+
+        console.log('%c[Music & Cultural Identity Test] Web version loaded successfully', 'color: #667eea');
+    </script>
+</body>
+
+
